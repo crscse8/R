@@ -1,0 +1,200 @@
+#We will focus on a random sample of 20,000 people from the BRFSS survey conducted in 2000.
+#Load the data set of 20,000 BRFSS observations 
+
+source("http://www.openintro.org/stat/data/cdc.R")
+
+names(cdc)
+
+#Exercise 1
+#How many cases are there in this data set? 20,000
+#How many variables? 9
+#genhlth: categorical, ordinal
+#exerany: categorical, discrete
+#hlthplan: categorical, discrete
+#smoke100: categorical, discrete
+#height: numerical,  discrete
+#weight: numerical,  discrete
+#wtdesire: numerical,  discrete
+#age: numerical, discrete
+#gender: categorical, ordinal
+
+#show top 6 observations
+head(cdc)
+
+#show bottom 6 observations
+tail(cdc)
+
+#Show numerical summary: minimum, first quartile, median, mean, second quartile, and maximum
+summary(cdc$weight)
+
+#calculate the mean, median, and variance of weight
+mean(cdc$weight) 
+var(cdc$weight)
+median(cdc$weight)
+
+#the number of people who have smoked 100 cigarettes in their lifetime
+table(cdc$smoke100)
+
+#Show relative frequency distribution
+table(cdc$smoke100)/20000
+
+#Make a barplot of the entries
+barplot(table(cdc$smoke100))
+
+#plotting the data in two steps.  Doing it in this fashion will create a new object called 'smoke'
+smoke <- table(cdc$smoke100)
+barplot(smoke)
+
+#Exercise 2
+#Create a numerical summary for height and age, and compute the interquartile range for each.
+summary(cdc$height)
+IQR(cdc$height)
+summary(cdc$age)
+IQR(cdc$age)
+
+#Compute the relative frequency distribution for gender and exerany. 
+table(cdc$gender)/20000
+table(cdc$exerany)/20000
+
+#How many males are in the sample? 9,569
+table(cdc$gender)
+
+#What proportion of the sample reports being in excellent health? 4,657
+table(cdc$genhlth)
+
+#Show how many participants have smoked across each gender
+table(cdc$gender,cdc$smoke100)
+
+#Show a mosaic plot of the above table
+mosaicplot(table(cdc$gender,cdc$smoke100))
+
+#Exercise 3
+#What does the mosaic plot reveal about smoking habits and gender? More males have smoked at least 100 cigarettes.
+#Show the size of the data frame 
+dim(cdc)
+
+#Show  the sixth variable of the 567th respondent
+cdc[567,6]
+
+#Show variable names
+names(cdc)
+
+#Show the weights for the first 10 respondents
+cdc[1:10,6]
+
+#Show range 1 thru 10
+1:10
+
+#Show all of the data for the first 10 respondents
+cdc[1:10,]
+
+#Show weights for all respondents
+cdc[,6]
+
+#or this can do the same:
+cdc$weight
+
+#Show weight for 567th respondent
+cdc$weight[567]
+
+#Show weight for the first ten respondents
+cdc$weight[1:10]
+
+#These formulas produce a True/False value for every respondent
+cdc$gender == "m"
+cdc$age > 30
+
+#Create male respondent subset
+mdata <- subset(cdc, cdc$gender == "m")
+
+#Show first 6 rows of mdata
+head(mdata)
+
+#Show subset of men who are over 30 years of age
+m_and_over30 <- subset(cdc, gender == "m" & age > 30)
+
+#Show subset of men or respondents who are over 30 years of age
+m_or_over30 <- subset(cdc, gender == "m" | age > 30)
+
+#Exercise 4
+#Create a new object called under23_and_smoke that contains all observations of respondents under the age of 23 that have smoked 100 cigarettes in their lifetime. 
+under23_and_smoke <- subset(cdc, smoke100 == "1"& age < 23)
+
+#Boxplot for height
+boxplot(cdc$height)
+
+#Show summary stats
+summary(cdc$height)
+
+#Compare heights of men and women 
+boxplot(cdc$height ~ cdc$gender)
+
+#For each of the 20,000 participants, we take their weight, divide by their height-squared and then multiply by 703. The result is 20,000 BMI values
+bmi <- (cdc$weight / cdc$height^2) * 703
+boxplot(bmi ~ cdc$genhlth)
+
+#Exercise 5
+#What does this box plot show? It shows that respondents who identify with fair or poor general health have a higher BMI.
+#Pick another categorical variable from the data set and see how it relates to BMI. List the variable you chose, why you might think it would have a relationship to BMI, and indicate what the figure seems to suggest.
+#There is an association between a higher BMI and a lower rate of exercise, so I decided to compare those two variables. The resulting plot suggests that respondents who do not exercise have a higher BMI.
+boxplot(bmi ~ cdc$exerany)
+
+#Show histrogram for respondent age
+hist(cdc$age)
+
+#Show histogram with breaks
+hist(bmi)
+hist(bmi, breaks = 50)
+
+#How do these two histograms compare? The histogram with the breaks shows a more accurate depiction of the data
+
+#On Your Own
+#1.  Make a scatterplot of weight versus desired weight. Describe the relationship between these two variables.
+#The majority of respondents are their desired weight or are close to their desired weight.
+plot(cdc$weight ~ cdc$wtdesire)
+
+#2. Let’s consider a new variable: the difference between desired weight (wtdesire) and current weight (weight). Create this new variable by subtracting the two columns in the data frame and assigning them to a new object called wdiff.
+wdiff <- cdc$weight - cdc$wtdesire
+wdiff
+
+#3.What type of data is wdiff? It's a numerical value that shows the difference in pounds(lbs) between a respondent's current weight and the desired weight
+#If an observation wdiff is 0, what does this mean about the person’s weight and desired weight?  It means their current weight also happens to be their desired weight - no weight to lose or gain.
+#What if wdiff is positive or negative?  A negative value means it's weight a respondent needs to gain, and a positive number indicates the weight a respondent would need to lose. 
+
+#4. Describe the distribution of wdiff in terms of its center, shape, and spread, including any plots you use. 
+plot(cdc$weight ~ cdc$wtdesire)
+
+#The center hovers between 100 and 200lbs. The shape has a sharp arrow effect, pointed downward, with an emphasis on the lower 100lbs.  The spread is narrow which suggests respondents have similar ideas when it comes to desired weight. 
+#What does this tell us about how people feel about their current weight?
+#The plot shows that the majority of respondents want to decrease their current weight.
+hist(cdc$weight, breaks = 50)
+hist(cdc$wtdesire, breaks = 50)
+
+#5.  Using numerical summaries and a side-by-side box plot, determine if men tend to view their weight differently than women.
+#x equals a weight difference greater than zero, which means weight a respondent wants to lose.
+x <- wdiff > 0
+
+#Number of male respondents who want to lose weight
+summary(x & cdc$gender == "m")
+
+#Number of female respondents who want to lose weight
+summary(x & cdc$gender == "f")
+
+#5,248 men want to lose weight - 26.24%
+#7,516 women want to lose weight - 37.58%
+#A higher percentage of female respondents are not satisfied with their weight
+boxplot(wdiff ~ cdc$gender)
+
+#6. Find the mean and standard deviation of weight and determine what proportion of the weights are within one standard deviation of the mean.
+#The mean of weight is 169.683
+mean(cdc$weight)
+
+#The standard deviation of weight is 40.08097
+sd( cdc$weight)
+
+#209.764 = 1 standard deviation of the mean
+#Need to determine number of people who fall between 169 and 209.764
+s <- cdc$weight == 169 | cdc$weight <= 209.764
+table(s)
+16935 / 20000
+#84.675% of weights are within one standard deviation of the mean.
