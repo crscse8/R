@@ -1,0 +1,115 @@
+#PART ONE
+#Setting up / exploring data
+
+source("http://www.openintro.org/stat/data/arbuthnot.R")
+arbuthnot
+dim(arbuthnot)
+names(arbuthnot)
+View(arbuthnot)
+arbuthnot$boys
+
+#Exercise 1
+
+#What command would you use to extract just the count of girls baptized each year?
+
+arbuthnot$girls
+
+#Plot of number of girls baptized per year
+
+plot(x = arbuthnot$year, y = arbuthnot$girls)
+
+#Number of girls baptized per year; connecting data points with lines
+
+plot(x = arbuthnot$year, y = arbuthnot$girls, type = "l")
+
+?plot
+
+#Exercise 2
+
+#Question: Is there an apparent trend in the number of girls baptized over the year?
+#Answer: Yes, there is an upward trend after 1660 in girl baptisms(births), plausibly due to the Great Fire of London in 1666 which helped eradicate many of the black rats and fleas that carried the plague bacillus (Bubonic Plague). 
+#Source: https://www.historic-uk.com/HistoryUK/HistoryofEngland/The-Great-Plague/
+
+#Sum of baptisms in 1629
+
+5218 + 4683
+
+#Show total number of baptisms for each year
+
+arbuthnot$boys + arbuthnot$girls
+
+#Plot total number of baptisms per year
+
+plot(arbuthnot$year, arbuthnot$boys + arbuthnot$girls, type = "l")
+
+#Ratio of number of boys to number of girls baptized in 1629
+
+5218 / 4683
+
+#Complete vectors of previous expression to show ratio for each year
+
+arbuthnot$boys / arbuthnot$girls
+
+#Proportion of newborns that are boys in 1629
+
+5218 / (5218 + 4683)
+
+#Complete vectors of previous expression to show proportion of newborns for each year
+
+arbuthnot$boys / (arbuthnot$boys + arbuthnot$girls)
+
+#Exercise 3
+
+#Plot of number of boys baptized per year
+ 
+plot(x = arbuthnot$year, y = arbuthnot$boys)
+ 
+#Number of boys baptized per year; connecting data points with lines
+ 
+plot(x = arbuthnot$year, y = arbuthnot$boys, type = "l")
+
+#There is an upward trend in boy baptisms(births) after 1660, and we can infer the same reasoning for the uptick from exercise 2.
+
+#Show if boys outnumber girls in each year:
+
+arbuthnot$boys > arbuthnot$girls
+
+#Each year returned a TRUE value
+
+#PART TWO - Analysis for present day birth records
+
+source("http://www.openintro.org/stat/data/present.R")
+
+#Question 1
+dim(present) 
+names(present)
+View(present)
+
+#1.a) Years included in the dataset = 1940 - 2002; b) 63 rows, 3 columns; c) column names = "year", "boys", "girls"
+
+#Question 2
+
+plot(present$year, present$boys + present$girls)
+
+#2.a) Arbuthnot's data showed a progressive uptick after 1660, however the Present data has more fluctuation; it was high prior to the 1970's, then it dips in the mid-1970's and then it goes up again after the 1980's.  Perhaps the drop is due to the Vietnam war?  A speculation which would require further research.
+
+#Question 3
+
+present$boys > present$girls
+
+present$boys / (present$boys + present$girls)
+
+ggplot(present, aes(x = present$boys > present$girls, y = present$year))
+
+#3. Arbuthnot's observation carries over into this dataset - boys are born in greater proportion than girls based on the dataset.
+
+#Question 4: In what year did we see the highest number of births?
+#Answer:1961, total = 4,268,326
+
+present$boys + present$girls
+
+#sort lowest to highest
+
+sort(present$boys + present$girls)
+
+#Last value is the highest, and cross-referenced that value with unsorted scheme to discover 1961 is the answer. It's also when JFK was President, which may or may not have had an impact.
