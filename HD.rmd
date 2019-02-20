@@ -1,0 +1,99 @@
+#Download population data of houses for Ames, Iowa 
+download.file("http://www.openintro.org/stat/data/ames.RData", destfile = "ames.RData")
+load("ames.RData")
+
+#Start with a simple random sample of size 60 from the population and a focus on the size of the house, represented by the variable Gr.Liv.Area.
+
+population <- ames$Gr.Liv.Area
+samp <- sample(population, 60)
+
+#Exercise 1  Describe the distribution of your sample. What would you say is the “typical” size within your sample? Also state precisely what you interpreted “typical” to mean.
+
+hist(samp)
+
+#The distribution is bimodal and right skewed. 
+
+#A typical size falls between 1,000 and 1,500 sq ft., the values between the two bimodal peaks - which is how I would interpret typical.
+
+#Exercise 2 Would you expect another student’s distribution to be identical to yours? Would you expect it to be similar? Why or why not?
+
+#I would expect for another student's distribution to be very similar.  The sample size is over 30, so it should be relatively close in nature. 
+
+#Calculate the mean of the sample
+
+sample_mean <- mean(samp)
+
+#Calculate 95% confidence interval
+
+se <- sd(samp) / sqrt(60)
+lower <- sample_mean - 1.96 * se
+upper <- sample_mean + 1.96 * se
+c(lower, upper)
+
+#[1] 1376.816 1653.618
+
+#This is an important inference that we’ve just made: even though we don’t know what the full population looks like, we’re 95% confident that the true average size of houses in Ames lies between the values lower and upper. 
+
+#Exercise 3 For the confidence interval to be valid, the sample mean must be normally distributed and have standard error. What conditions must be met for this to be true?
+
+#Confidence intervals try to estimate a population parameter.  The sample has to be completely random, and the sampling distribution of the sample proportion should have a normal distribution - this assumption can be made with the following rule of thumb: per sample, more than 10 successes and more than 10 failures each.  The other condition is the 10% rule, also called the independence condition, which means the sample size should be less than 10% of the population.
+
+#Exercise 4 What does “95% confidence” mean? 
+
+#The standard error (SE) represents the standard deviation associated with the estimate, and roughly 95% of the time the estimate will be within 2 SE of the parameter. If the interval spreads out 2 standard errors from the point estimate, we can be roughly 95% confident that we have captured the true parameter.
+
+#Calculate true population mean
+
+mean(population)
+
+#Exercise 5 Does your confidence interval capture the true average size of houses in Ames? If you are working on this lab in a classroom, does your neighbor’s interval capture this value?
+
+#The mean is 1499.69 and this value is captured in the confidence interval.  I am a remote student so the second questions is N/A.
+
+#Exercise 6 Each student in your class should have gotten a slightly different confidence interval. What proportion of those intervals would you expect to capture the true population mean? Why? If you are working in this lab in a classroom, collect data on the intervals created by other students in the class and calculate the proportion of intervals that capture the true population mean.
+
+#I would expect that if each student is using a 95% confidence level, then the majority of intervals (90%+) should include the true population mean. I'm not in a classroom so this part of the question is N/A.
+
+#Create empty vectors where we can save the means and standard deviations that will be calculated from each sample. And store the desired sample size as n.
+
+samp_mean <- rep(NA, 50)
+samp_sd <- rep(NA, 50)
+n <- 60
+
+#Create loop where we calculate the means and standard deviations of 50 random samples.
+
+for(i in 1:50){
+  samp <- sample(population, n) # obtain a sample of size n = 60 from the population
+  samp_mean[i] <- mean(samp)    # save sample mean in ith element of samp_mean
+  samp_sd[i] <- sd(samp)        # save sample sd in ith element of samp_sd
+}
+
+#Construct the confidence intervals:
+
+lower_vector <- samp_mean - 1.96 * samp_sd / sqrt(n) 
+upper_vector <- samp_mean + 1.96 * samp_sd / sqrt(n)
+
+#Lower bounds of these 50 confidence intervals are stored in lower_vector, and the upper bounds are in upper_vector. Let’s view the first interval.
+
+c(lower_vector[1], upper_vector[1])
+
+#On Your Own:
+
+#1.  What proportion of your confidence intervals include the true population mean? Is this proportion exactly equal to the confidence level? 
+
+plot_ci(lower_vector, upper_vector, mean(population))
+
+#Based on the plot, only 3 confidence intervals do not contain the true population mean, so that means 47/50 (94%) contain the true population mean (1499.6904).  This proportion is not exactly equal to the 95% confidence level, but we're dealing with estimates so no outcome can be precise.  Also, I noticed that each time I ran the code, the plot outcomes changed.
+
+#2. Pick a confidence level of your choosing, provided it is not 95%. What is the appropriate critical value?
+
+#I choose 98% confidence level, z-value is 2.33
+
+#3. Calculate 50 confidence intervals at the confidence level you chose in the previous question.  Using the plot_ci function, plot all intervals and calculate the proportion of intervals that include the true population mean. How does this percentage compare to the confidence level selected for the intervals?
+
+lower_vector2 <- samp_mean - 2.33 * samp_sd / sqrt(n) 
+upper_vector2 <- samp_mean + 2.33 * samp_sd / sqrt(n)
+c(lower_vector2[1], upper_vector2[1])
+plot_ci(lower_vector2, upper_vector2, mean(population))
+
+#At the time that I ran the code, all confidence intervals (100%) contained the true population mean (1499.6904).
