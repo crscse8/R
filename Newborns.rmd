@@ -1,0 +1,125 @@
+#Load nc data
+
+download.file("http://www.openintro.org/stat/data/nc.RData", destfile = "nc.RData")
+load("nc.RData")
+
+#Exercise 1 - What are the cases in this data set? How many cases are there in our sample?
+
+summary(nc)
+
+#The cases are babies and there are 1,000 cases in the sample. 
+
+#Taking a closer look at fathers' ages versus mothers' ages, and yes, there are outliers.
+
+boxplot(nc$fage, nc$mage)
+
+#Exercise 2 - Make a side-by-side boxplot of habit and weight. What does the plot highlight about the relationship between these two variables?
+
+#Generally speaking, it appears that mothers who don't smoke give birth to babies that weigh more. 
+
+plot(nc$habit, nc$weight)
+
+#Compare the means of the distributions using the following function to split the weight variable into the habit groups, then take the mean of each using the mean function.
+
+by(nc$weight, nc$habit, mean)
+
+#Exercise 3 - Check if the conditions necessary for inference are satisfied. Note that you will need to obtain sample sizes to check the conditions. You can compute the group size using the same by command above but replacing mean with  length.
+
+#Computing group size 
+
+by(nc$weight, nc$habit, length)
+
+#Create a random sample
+
+samp_mean <- rep(NA, 50)
+samp_sd <- rep(NA, 50)
+n <- 60
+
+for(i in 1:50){
+    samp <- sample(nc$weight, n) # obtain a sample of size n = 60 from the population
+    samp_mean[i] <- mean(samp)    # save sample mean in ith element of samp_mean
+    samp_sd[i] <- sd(samp)        # save sample sd in ith element of samp_sd
+}
+
+lower_vector <- samp_mean - 1.96 * samp_sd / sqrt(n)
+upper_vector <- samp_mean + 1.96 * samp_sd / sqrt(n)
+c(lower_vector[1], upper_vector[1])
+
+#Comparing histrogram of the sample versus histogram of the total population
+
+wgtmean <- mean(nc$weight)
+wgtsd   <- sd(nc$weight)
+
+hist(samp)
+
+hist(nc$weight)
+
+hist(samp, probability = TRUE, ylim = c(0, 0.4))
+x <- 140:190
+y <- dnorm(x = x, mean = wgtmean, sd = wgtsd)
+lines(x = x, y = y, col = "blue")
+
+sim_norm <- rnorm(n = length(nc$weight), mean = wgtmean, sd = wgtsd)
+qqnorm(sim_norm)
+qqline(sim_norm)
+
+#Overall, the conditions necessary for inference are satisfied.
+
+#Exercise 4 - Write the hypotheses for testing if the average weights of babies born to smoking and non-smoking mothers are different.
+
+#The null hypothesis is true if baby weight is affected by a mother's smoking habit.
+#The alternate hypothesis is true if baby weight is not affected by a mother's smoking habit.
+
+#The inference function will be used for conducting hypothesis tests and constructing confidence intervals.
+
+inference(y = nc$weight, x = nc$habit, est = "mean", type = "ht", null = 0, 
+          alternative = "twosided", method = "theoretical")
+
+#Exercise 5 - Change the type argument to "ci" to construct and record a confidence interval for the difference between the weights of babies born to smoking and non-smoking mothers.
+
+inference(y = nc$weight, x = nc$habit, est = "mean", type = "ci", null = 0, 
+          alternative = "twosided", method = "theoretical")
+
+#Changing the order
+
+inference(y = nc$weight, x = nc$habit, est = "mean", type = "ci", null = 0, 
+          alternative = "twosided", method = "theoretical", 
+          order = c("smoker","nonsmoker"))
+
+#On Your Own
+
+#1. Calculate a 95% confidence interval for the average length of pregnancies (weeks) and interpret it in context. Note that since you’re doing inference on a single population parameter, there is no explanatory variable, so you can omit the x variable from the function.
+
+inference(y = nc$weeks, est = "mean", type = "ci", null = 0, 
+          alternative = "twosided", method = "theoretical")
+          
+#The average length of pregnancies is between 36 and 40 weeks, which the majority within the unimodal range of 38-40 weeks.
+
+#2. Calculate a new confidence interval for the same parameter at the 90% confidence level. You can change the confidence level by adding a new argument to the function: conflevel = 0.90 .
+
+inference(y = nc$weeks, est = "mean", type = "ci", null = 0, 
+          alternative = "twosided", method = "theoretical", conflevel = 0.90)
+
+#3. Conduct a hypothesis test evaluating whether the average weight gained by younger mothers is different than the average weight gained by mature mothers.
+
+inference(y = nc$gained, x = nc$mature, est = "mean", type = "ci", null = 0, 
+          alternative = "twosided", method = "theoretical", conflevel = 0.95)
+         
+#It appears that younger mothers gain more weight.
+
+#4.  Now, a non-inference task: Determine the age cutoff for younger and mature mothers. Use a method of your choice, and explain how your method works.
+
+# I decided to use a mosaic plot, and based on the plot, the cutoff age for younger mothers is 34 years of age and the cutoff age for mature mothers is 50 years of age. 
+
+mosaicplot(table(nc$mage,nc$mature))
+
+#5.  Pick a pair of numerical and categorical variables and come up with a research question evaluating the relationship between these variables. Formulate the question in a way that it can be answered using a hypothesis test and/or a confidence interval. Answer your question using the inference function, report the statistical results, and also provide an explanation in plain language.
+
+#Does gender affect a baby's weight?
+#The null hypothesis is true if gender does affect a baby's weight.
+#The alternate hypothesis is true if gender does not affect a baby's weight.  
+
+inference(y = nc$weight, x = nc$gender, est = "mean", type = "ht", null = 0, 
+          alternative = "twosided", method = "theoretical",  conflevel = 0.95)
+
+#According to the plot, male babies tend to weigh more than female babies. 
